@@ -5,7 +5,7 @@ Resources:
           SecurityGroups:
             - !Ref InstanceSecurityGroup
           KeyName: admin-devops-alemaonull-ubuntu
-          ImageId: ami-0d296d66f22f256c2 
+          ImageId: ami-09e67e426f25ce0d7 
     InstanceSecurityGroup:
         Type: 'AWS::EC2::SecurityGroup'
         Properties:

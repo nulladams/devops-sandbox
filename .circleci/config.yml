@@ -1,0 +1,20 @@
+version: 2.1
+
+jobs:
+  create_infrasctructure:
+    docker:
+      - image: amazon/aws-cli
+    steps:
+      - checkout
+      - run:
+          name: Ensure backend infrastructure exists
+          command: |
+            aws cloudformation deploy \
+              --template-file template.yml \
+              --stack-name devops-sandbox-stack
+
+workflows:
+  my_workflow:
+    jobs:
+      - create_infrastructure
+

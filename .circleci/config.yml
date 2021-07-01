@@ -22,8 +22,23 @@ jobs:
               --region us-east-1 \
               --output text >> inventory
             cat inventory
-           
-           
+
+      - persist_to_work:
+            root: ~/
+            paths:
+              - inventory
+          
+  print_inventory:
+    docker:
+      - image: circleci/node:13.8.0
+    steps:
+      - attach_workspace:
+          at: ~/
+      - run: cat ~/inventory
+
+
+
+
 workflows:
   my_workflow:
     jobs:

@@ -13,21 +13,17 @@ jobs:
               --template-file template.yml \
               --stack-name devops-sandbox-stack \
               --region us-east-1
-
       - run:
           name: Build inventory file
           command: |
             echo "[all]" > inventory
-            echo "teste" >> inventory
             aws ec2 describe-instances \
-              --query 'Reservations[*].Instances[*].PublicIpAddresses' \
+              --query 'Reservations[*].Instances[*].PublicIpAddress' \
               --region us-east-1 \
               --output text >> inventory
-            echo "mais um teste" >> inventory
-            cat inventory
-
+           
+           
 workflows:
   my_workflow:
     jobs:
       - create_infrastructure
-

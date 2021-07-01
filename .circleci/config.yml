@@ -26,6 +26,7 @@ jobs:
             cat ~/inventory
 
       - persist_to_workspace:
+            root: ~/
             paths:
               - inventory
           

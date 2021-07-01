@@ -20,7 +20,7 @@ jobs:
             echo "[all]" > inventory
             aws ec2 describe-instances \
               --query 'Reservations[*].Instances[*].PublicIpAddresses' \
-              --region us-east-1
+              --region us-east-1 \
               --output text >> inventory
             cat inventory
 

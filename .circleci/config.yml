@@ -18,10 +18,12 @@ jobs:
           name: Build inventory file
           command: |
             echo "[all]" > inventory
+            echo "teste" >> inventory
             aws ec2 describe-instances \
               --query 'Reservations[*].Instances[*].PublicIpAddresses' \
               --region us-east-1 \
               --output text >> inventory
+            echo "mais um teste" >> inventory
             cat inventory
 
 workflows:

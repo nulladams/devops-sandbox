@@ -21,6 +21,7 @@ jobs:
               --query 'Reservations[*].Instances[*].PublicIpAddress' \
               --region us-east-1 \
               --output text >> inventory
+            cat inventory
            
            
 workflows:

@@ -48,7 +48,7 @@ jobs:
           name: "Configure server"
           command: |
             ls -la
-            ansible-playbook -i inventory main.yml      
+            ansible-playbook -i inventory ~/.circleci/main.yml      
 
 
 workflows:

@@ -1,0 +1,202 @@
+version: 2.1
+
+commands:
+  destroy-enviroment:
+    description: Destroy backend and frontend cloudformation stacks given a workflow ID
+    parameters:
+      workflow_id:
+        type: string
+      event:
+        type: string
+    steps:
+      - run:
+          name: Destroy environment << parameters.workflow_id >>
+          when: << parameters.event >>
+          command: |
+            echo "Destroying environment: << parameters.workflow_id >>"
+            aws s3 rm s3://udapeople-<< parameter.workflow_id >> --recursive
+            aws cloudformation delete-stack --stack-name udapeople-backend-<<parameters.workflow_id >>
+            aws cloudformation delete-stack --stack-name udapeople-frontend-<< parametes.workflow_id >>
+
+  rollback-migrations-on-fail:
+    description: Roll back migrations if needed.
+    steps:
+      - restore_cache:
+          keys: [backend-build]
+      - attach_workspace:
+          at: ~/project/backend
+      - run:
+          name: Revert Migrations
+
+jobs:
+  lint-frontend:
+    environment:
+      CODE: 123
+    docker:
+      - image: circleci/node:13.8.0
+    steps:
+      - checkout
+      - restore_cache:
+          keys: [frontend-build]
+      - run:
+          name: Lint frontend
+          command: |
+            cd frontend
+            echo $CODE
+            npm install
+            npm run build
+      - save_cache:
+          paths: [frontend/node_modules]
+          key: frontend-build
+
+  build-backend:
+    docker:
+      - image: circleci/node:13.8.0
+    steps:
+      - checkout
+      - restore_cache:
+          keys: [backend-build]
+      - run:
+          name: Backend build
+          command: |
+            cd backend
+            npm install
+            npm run build
+      - save_cache:
+          paths: [backend/node_modules]
+          key: backend-build
+
+  test-frontend:
+    docker:
+      - image: circleci/node:13.8.0
+    steps:
+      - checkout
+      - restore_cache:
+          keys: [frontend-build]
+      - run:
+          name: Run frontend test
+          command: |
+            cd frontend
+            npm install
+            npm run test
+
+  test-backend:
+    docker:
+      - image: circleci/node:13.8.0
+    steps:
+      - checkout
+      - restore_cache
+          keys: [backend-build]
+      - run:
+          name: Run backend tests
+          command: |
+            cd backend
+            npm install
+            npm run test
+
+  scan-frontend:
+    docker:
+      - image: circleci/node:13.8.0
+    steps:
+      - checkout
+      - restore_cache:
+          keys: [frontend-build]
+      - run:
+          name: Scan frontend dependencies
+          command: |
+            cd frontend
+            npm install
+            npm audit --audit-level=critical
+
+  scan-backend:
+    docker:
+      - image: circleci/node:13.8.0
+    steps:
+      - checkout
+      - restore_cache
+          keys: [backend-build]
+      - run:
+          name: Scan backend dependencies
+          command: |
+            cd backend
+            npm install
+            npm audit --audit-level=critical || true
+
+  deploy-infrastructure:
+    docker:
+      - image: amazon/aws-cli
+    branches:
+      only:
+        - master
+        - /rc-.*/
+    steps:
+      - checkout
+      - run: yum -y install tar gzip
+      - run:
+          name: Ensure backend infrastructure exist
+          command: |
+            aws cloudformation deploy \
+              --template-file .circleci/files/backend.yml \
+              --stack-name "udapeople-backend-${CIRCLE_WORKFLOW_ID:0:7}" \
+              --parameter-overrides ID="${CIRCLE_WORKFLOW_ID:0:7}" \
+              --tags project=udapeople
+      - run:
+          name: Ensure frontend infrastructure exist
+          command: |
+            aws cloudformation deploy
+              --template-file .circleci/files/frontend.yml \
+              --stack-name "udapeople-frontend-${CIRCLE_WORKFLOW_ID:0:7}" \
+              --parameter-overrides ID="${CIRCLE_WORKFLOW_ID:0:7}" \
+              --tags project=udapeople
+      - run:
+          name: Add backend ip to ansible inventory
+          command: |
+            aws ec2 describe-instances \
+              --filters "Name=tag:Name, Values=backend-${CIRCLE_WORKFLOW_ID:0:7}" \
+                                                                                             --query "Reservations[*].Instances[*].PublicIpAddress' \
+                                                                                             --output text >> .circleci/ansible/inventory.txt
+                                                                                     - persist_to_workspace:
+          root: ~/
+          paths:
+            - project/.circleci/ansible/inventory.txt
+      - destroy-environment:
+          workflow_id: "${CIRCLE_WORKFLOW_ID:0:7}"
+          event: on_fail
+
+  configure-infeastructure:
+    docker:
+      - image: python:3.7-alpine3.11
+    steps:
+      - checkout
+      - add_ssh_keys:
+          fingerprints: [get from circle ssh keys - need to add privete key from ec2 IAM]
+      - attach_workspace:
+          at: ~/
+      - run:
+          name: Install dependencies
+
+workflows:
+  default:
+    jobs:
+      - lint-frontend
+      - build-backend
+      - test-frontend:
+          requires: [lint-frontend]
+      - test-backend:
+          requires: [build-backend]
+      - scan-backend:
+          requires: [build-backend]
+      - scan-frontend:
+          requires: [lint-frontend]
+      - deploy-infrastructure:
+          requires: [test-frontend, test-backend, scan-frontend, scan-backend]
+          filters:
+            branches:
+              only: [circleci-project-setup]
+      - configure-infrastructure:
+          requires: [deploy-infrastructure]
+      - run-migrations:
+          requires: [configure-infrastructure]
+      - deploy-frontend:
+          requires: [run-migrations]
+        

@@ -30,21 +30,31 @@ jobs:
             paths:
               - inventory
           
-  print_inventory:
+  configure_infrastructure:
     docker:
-      - image: circleci/node:13.8.0
+      - image: python:3.7-alpine3.11
     steps:
+      - checkout
       - attach_workspace:
           at: ~/
       - run: cat ~/inventory
-
-
+      - add_ssh_keys:
+          fingerprints: ["02:dd:1d:c1:bd:35:6f:53:ce:8a:3a:7c:f9:f6:ff:84"]
+      - run:
+          name: "Install dependencies"
+          command: |
+            apk add --update ansible
+      -run:
+          name: "Configure server"
+          command: |
+            la -la
+            ansible-playbook -i inventory main.yml      
 
 
 workflows:
   my_workflow:
     jobs:
       - create_infrastructure
-      - print_inventory:
+      - configure_infrastructure:
             requires:
                 - create_infrastructure    

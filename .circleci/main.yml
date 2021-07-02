@@ -1,0 +1,6 @@
+
+- name: Setting up the web server in EC2 instance
+  hosts: all
+  user: ubuntu
+  roles:
+    - setup

@@ -58,12 +58,15 @@ jobs:
             apk add --update ansible
             curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
             unzip awscliv2.zip
+			ls -la
+			cd aws
+			ls -la
             ./aws/install         
-      - run:
-          name: "Configure server"
-          command: |
-            ls -la
-            ansible-playbook -i ~/inventory .circleci/main.yml
+      #- run:
+      #    name: "Configure server"
+      #    command: |
+      #      ls -la
+      #      ansible-playbook -i ~/inventory .circleci/main.yml
       - destroy_environment
 
 

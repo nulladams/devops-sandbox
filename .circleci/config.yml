@@ -61,7 +61,7 @@ jobs:
             ls -la
             cd aws
             ls -la
-            ./aws/install         
+            aws/install         
       #- run:
       #    name: "Configure server"
       #    command: |

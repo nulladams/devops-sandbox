@@ -55,7 +55,9 @@ jobs:
           name: "Install dependencies"
           command: |
             # apk add --update ansible
-            yum install -y ansible
+            python --version
+            easy_install pip
+            pip install ansible
       - run:
           name: "Configure server"
           command: |

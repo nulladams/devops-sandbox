@@ -1,5 +1,13 @@
 version: 2.1
 
+commands:
+  destroy_environment:
+    steps:
+      - run:
+          name: Destroy environment
+          command: |
+            aws cloudformation delete-stack --stack-name devops-sandbox-${CIRCLE_WORKFLOW_ID}
+
 jobs:
   create_infrastructure:
     docker:
@@ -12,7 +20,7 @@ jobs:
           command: |
             aws cloudformation deploy \
               --template-file template.yml \
-              --stack-name devops-sandbox-stack \
+              --stack-name devops-sandbox-${CIRCLE_WORKFLOW_ID} \
               --region us-east-1
       - run:
           name: Build inventory file
@@ -24,11 +32,12 @@ jobs:
               --region us-east-1 \
               --output text >> ~/inventory
             cat ~/inventory
-
       - persist_to_workspace:
             root: ~/
             paths:
               - inventory
+      - destroy_environment
+        when: on_fail
           
   configure_infrastructure:
     docker:
@@ -48,7 +57,9 @@ jobs:
           name: "Configure server"
           command: |
             ls -la
-            ansible-playbook -i ~/inventory .circleci/main.yml      
+            ansible-playbook -i ~/inventory .circleci/main.yml
+      - destroy_environment
+        when: on_fail      
 
 
 workflows:

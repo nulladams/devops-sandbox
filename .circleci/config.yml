@@ -42,10 +42,10 @@ jobs:
           
   configure_infrastructure:
     docker:
-      - image: amazon/aws-cli
+      - image: python:3.7-alpine3.11
     steps:
       - checkout
-      - run: yum -y install tar gzip
+        # - run: yum -y install tar gzip
       - attach_workspace:
           at: ~/
       - run: cat ~/inventory
@@ -54,16 +54,16 @@ jobs:
       - run:
           name: "Install dependencies"
           command: |
-            # apk add --update ansible
-            python --version
-            easy_install pip
-            pip install ansible
+            apk add --update ansible
+            curl "https://awscli/amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
+ 			unzip awscliv2.zip
+			./aws/install         
       - run:
           name: "Configure server"
           command: |
             ls -la
             ansible-playbook -i ~/inventory .circleci/main.yml
-      - destroy_environment      
+      - destroy_environment
 
 
 workflows:

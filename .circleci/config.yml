@@ -16,10 +16,23 @@ jobs:
       - run: aws s3 sync . s3://devops-"${CIRCLE_WORKFLOW_ID:0:7}" --delete
 
 
+  promote_to_production:
+    docker:
+      - image: amazon/aws-cli
+    steps:
+      - checkout
+      - run: |
+          aws cloudformation deploy \
+            --template-file cloudformation.yml \
+            --stack-name cloudfront \
+            --parameter-overrides PipelineID=devops-"${CIRCLE_WORKFLOW_ID:0:7}"
+
 workflows:
   default:
     jobs:
       - create_and_deploy_frontend
+      - promote_to_production
+          requires: [create_and_deploy_frontend]
 
 #jobs:
 #  create_infrastructure:

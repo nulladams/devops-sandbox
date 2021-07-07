@@ -15,7 +15,7 @@ Resources:
     Properties:
       DistributionConfig:
         Origins:
-          - DomainName: !Sub "${PipelineID}.s3-website-us-east-1.amazonaws.com"
+          - DomainName: "devopsbuket.s3-us-east-1.amazonaws.com"
             Id: webpage
             S3OriginConfig:
               OriginAccessIdentity: !Sub "origin-access-identity/cloudfront/${CloudFrontOriginAccessIdentity}"

@@ -25,6 +25,7 @@ jobs:
           aws cloudformation deploy \
             --template-file cloudformation.yml \
             --stack-name cloudfront \
+            --region us-east-1 \ 
             --parameter-overrides PipelineID=devops-"${CIRCLE_WORKFLOW_ID:0:7}"
 
 workflows:

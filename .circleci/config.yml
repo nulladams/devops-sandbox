@@ -31,7 +31,7 @@ workflows:
   default:
     jobs:
       - create_and_deploy_frontend
-      - promote_to_production
+      - promote_to_production:
           requires: [create_and_deploy_frontend]
 
 #jobs:

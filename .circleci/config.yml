@@ -48,8 +48,9 @@ jobs:
           at: ~/
       - run: |
           pwd
-          ls -la          
-          cat pipelineID
+          ls -la
+          ls -la ~/          
+          cat ~/pipelineID
           read -r OldPipelineID < pipelineID
           if [ -z $OldPipelineID ]
           then

@@ -57,7 +57,7 @@ jobs:
             echo "old pipelineID is empty"
           else
             aws s3 rm "s3://${OldPipelineID}" --recursive
-            aws cloudformation delete-stack --stack-name "${OldPipelineIDi}" --region us-east-1
+            aws cloudformation delete-stack --stack-name "${OldPipelineID}" --region us-east-1
           fi
 
 

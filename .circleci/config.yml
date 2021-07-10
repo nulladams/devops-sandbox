@@ -43,9 +43,12 @@ jobs:
       - image: amazon/aws-cli
     steps:
       - checkout
+      - run: yum install -y tar gzip
       - attach_workspace:
           at: ~/
       - run: |
+          pwd
+          ls -la          
           cat pipelineID
           read -r OldPipelineID < pipelineID
           if [ -z $OldPipelineID ]

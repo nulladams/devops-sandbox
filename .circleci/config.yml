@@ -53,7 +53,8 @@ jobs:
           cat ~/pipelineid
           read -r OldPipelineID < ~/pipelineid
           echo $OldPipelineID
-          if [ -z $OldPipelineID ]
+          echo "antes de entrar no if"
+          if [[ -z "$OldPipelineID" ]];
           then
             echo "old pipelineID is empty"
             return 0

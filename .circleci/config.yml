@@ -52,10 +52,12 @@ jobs:
           ls -la ~/          
           cat ~/pipelineid
           read -r OldPipelineID < ~/pipelineid
+          echo $OldPipelineID
           if [ -z $OldPipelineID ]
           then
             echo "old pipelineID is empty"
           else
+            echo "entered delete old pipeline"
             aws s3 rm "s3://${OldPipelineID}" --recursive
             aws cloudformation delete-stack --stack-name "${OldPipelineID}" --region us-east-1
           fi

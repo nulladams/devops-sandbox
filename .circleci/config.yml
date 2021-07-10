@@ -31,7 +31,7 @@ jobs:
       - checkout
       - run: yum install -y tar gzip
       - run: |
-          aws cloudformation list-exports --query "Exports[?Name==\`PipelineID\`].Value" --region us-east-1 --no-paginate --output text >> ~/pipelineid
+          aws cloudformation list-exports --query "Exports[?Name==\`PipelineID\`].Value" --region us-east-1 --no-paginate --output text > ~/pipelineid
           cat ~/pipelineid
       - persist_to_workspace:
           root: ~/
@@ -56,6 +56,7 @@ jobs:
           if [ -z $OldPipelineID ]
           then
             echo "old pipelineID is empty"
+            return 0
           else
             echo "entered delete old pipeline"
             aws s3 rm "s3://${OldPipelineID}" --recursive

@@ -50,8 +50,8 @@ jobs:
           pwd
           ls -la
           ls -la ~/          
-          cat ~/pipelineID
-          read -r OldPipelineID < pipelineID
+          cat ~/pipelineid
+          read -r OldPipelineID < ~/pipelineid
           if [ -z $OldPipelineID ]
           then
             echo "old pipelineID is empty"

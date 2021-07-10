@@ -49,9 +49,12 @@ jobs:
       - run: |
           pwd
           ls -la
-          ls -la ~/          
+          ls -la ~/
+          echo "depois ls"          
           cat ~/pipelineid
+          echo "depois do cat"
           read -r OldPipelineID < ~/pipelineid
+          echo "antes variavel"
           echo $OldPipelineID
           echo "antes de entrar no if"
           if [[ -z "$OldPipelineID" ]];

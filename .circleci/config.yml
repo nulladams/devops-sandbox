@@ -46,9 +46,12 @@ jobs:
       - run: |
           cat pipelineID
           read -r OldPipelineID < pipelineID
-          if $(
-          aws s3 rm "s3://${OldPipelineID}" --recursive
-          aws cloudformation delete
+          if [ -z $OldPipelineID ]
+          then
+            echo "old pipelineID is empty"
+          else
+            aws s3 rm "s3://${OldPipelineID}" --recursive
+            aws cloudformation delete-stack --stack-name "${OldPipelineIDi}"
 
 
 workflows:
@@ -57,6 +60,10 @@ workflows:
       - create_and_deploy_frontend
       - promote_to_production:
           requires: [create_and_deploy_frontend]
+      - get_last_deployment_id
+      - clean_up_old_front_end:
+          requires: [get_last_deployment_id]
+
 
 #jobs:
 #  create_infrastructure:

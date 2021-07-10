@@ -31,10 +31,25 @@ jobs:
       - checkout
       - run: |
           aws cloudformation list-exports --query "Exports[?Name==\`PipelineID\`].Value" --no-paginate --output text >> ~/pipelineid
-    persist_to_workspace:
-      root: ~/
-      paths:
-        - pipelineid
+      - persist_to_workspace:
+          root: ~/
+          paths:
+            - pipelineid
+
+  clean_up_old_front_end:
+    docker:
+      - image: amazon/aws-cli
+    steps:
+      - checkout
+      - attach_workspace:
+          at: ~/
+      - run: |
+          cat pipelineID
+          read -r OldPipelineID < pipelineID
+          if $(
+          aws s3 rm "s3://${OldPipelineID}" --recursive
+          aws cloudformation delete
+
 
 workflows:
   default:

@@ -30,7 +30,7 @@ jobs:
     steps:
       - checkout
       - run: |
-          aws cloudformation list-exports --query "Exports[?Name==\`PipelineID\`].Value" --no-paginate --output text >> ~/pipelineid
+          aws cloudformation list-exports --query "Exports[?Name==\`PipelineID\`].Value" --region us-east-1 --no-paginate --output text >> ~/pipelineid
       - persist_to_workspace:
           root: ~/
           paths:

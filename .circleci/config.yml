@@ -61,7 +61,6 @@ jobs:
           if [[ -z "$OldPipelineID" ]];
           then
             echo "old pipelineID is empty"
-            return 0
           else
             echo "entered delete old pipeline"
             aws s3 rm "s3://${OldPipelineID}" --recursive

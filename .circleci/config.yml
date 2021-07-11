@@ -53,7 +53,8 @@ jobs:
           echo "depois ls"          
           cat ~/pipelineid
           echo "depois do cat"
-          read -r OldPipelineID < ~/pipelineid
+          #read -r OldPipelineID < ~/pipelineid
+          OldPipelineID=$(head -n 1 ~/pipelineid)
           echo "antes variavel"
           echo $OldPipelineID
           echo "antes de entrar no if"
